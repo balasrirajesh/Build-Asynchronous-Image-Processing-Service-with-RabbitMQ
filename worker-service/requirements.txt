@@ -1,0 +1,8 @@
+aio-pika
+sqlalchemy
+asyncpg
+Pillow
+aiohttp
+psycopg2-binary
+pytest
+pytest-asyncio
