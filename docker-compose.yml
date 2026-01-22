@@ -16,6 +16,7 @@ services:
       RABBITMQ_PORT: 5672
     volumes:
       - ./tests:/app/tests
+      - ./processed_images:/app/processed_images
     depends_on:
       rabbitmq:
         condition: service_healthy

@@ -19,7 +19,23 @@ QUEUE_NAME = "image_processing_queue"
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+from fastapi.staticfiles import StaticFiles
+
+# ... existing imports ...
+
 app = FastAPI()
+
+# Mount static files
+import os
+processed_images_dir = "/app/processed_images"
+os.makedirs(processed_images_dir, exist_ok=True)
+app.mount("/app/processed_images", StaticFiles(directory=processed_images_dir), name="processed_images")
+
+# Mount tests directory for local/offline testing
+tests_dir = "/app/tests"
+if os.path.exists(tests_dir):
+    app.mount("/static/tests", StaticFiles(directory=tests_dir), name="tests")
+
 
 # RabbitMQ Connection
 rabbitmq_connection = None

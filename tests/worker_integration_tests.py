@@ -11,7 +11,7 @@ async def test_end_to_end_flow():
     # 1. Submit Job
     async with httpx.AsyncClient() as client:
         payload = {
-            "imageUrl": "https://via.placeholder.com/150",
+            "imageUrl": "http://api-service:8000/static/tests/fixtures/test_image.pgm",
             "transformations": ["resize:100x100", "grayscale"]
         }
         response = await client.post(f"{API_URL}/api/v1/images/process", json=payload)

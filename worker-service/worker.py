@@ -5,7 +5,7 @@ import logging
 import aio_pika
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy import update
+from sqlalchemy import update, select
 
 # Adjust python path if needed in Docker, but shared/ should be in path
 from shared.models import Job
@@ -51,6 +51,15 @@ async def process_message(message: aio_pika.IncomingMessage):
         transformations = data.get("transformations", [])
         
         logger.info(f"Processing job {job_id}")
+
+        # Idempotency Check
+        async with AsyncSessionLocal() as session:
+            result = await session.execute(select(Job).where(Job.job_id == job_id))
+            existing_job = result.scalar_one_or_none()
+            if existing_job and existing_job.status == "COMPLETED":
+                logger.info(f"Job {job_id} is already COMPLETED. Skipping processing to ensure idempotency.")
+                return
+
 
         try:
             # Update status to PROCESSING

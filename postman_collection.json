@@ -1,0 +1,101 @@
+{
+    "info": {
+        "_postman_id": "b6a7c3d2-4e5f-4a1b-9c8d-7e6f5a4b3c2d",
+        "name": "Image Processing Service",
+        "description": "Collection for testing the Asynchronous Image Processing Service",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "1. Submit Job",
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "exec": [
+                            "var jsonData = pm.response.json();",
+                            "pm.environment.set(\"jobId\", jsonData.jobId);",
+                            "console.log(\"Job ID saved:\", jsonData.jobId);"
+                        ],
+                        "type": "text/javascript"
+                    }
+                }
+            ],
+            "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"imageUrl\": \"http://api-service:8000/static/tests/fixtures/test_image.pgm\",\n    \"transformations\": [\"resize:200x200\", \"grayscale\"]\n}",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        }
+                    }
+                },
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/images/process",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "8000",
+                    "path": [
+                        "api",
+                        "v1",
+                        "images",
+                        "process"
+                    ]
+                },
+                "description": "Submits a new image processing job. The Job ID is automatically saved to the environment variable `jobId`."
+            },
+            "response": []
+        },
+        {
+            "name": "2. Check Job Status",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/images/jobs/{{jobId}}",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "8000",
+                    "path": [
+                        "api",
+                        "v1",
+                        "images",
+                        "jobs",
+                        "{{jobId}}"
+                    ]
+                },
+                "description": "Checks the status of the job using the `jobId` saved from the previous request."
+            },
+            "response": []
+        },
+        {
+            "name": "3. Get Result Image",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:8000/app/processed_images/{{jobId}}.png",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "8000",
+                    "path": [
+                        "app",
+                        "processed_images",
+                        "{{jobId}}.png"
+                    ]
+                },
+                "description": "Retrieves the processed image once the job is COMPLETED."
+            },
+            "response": []
+        }
+    ]
+}
